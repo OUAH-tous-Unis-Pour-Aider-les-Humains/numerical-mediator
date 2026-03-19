@@ -1,0 +1,31 @@
+name: "✨ Demande de fonctionnalité"
+description: "Proposer une nouvelle fonctionnalité"
+title: "[FEAT] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème à résoudre
+      description: Quel besoin utilisateur est adressé ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solution proposée
+      description: Décrivez la solution fonctionnelle et technique envisagée.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Contraintes
+      description: Ex. dépendances, sécurité, compatibilité, performance.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      description: Listez les critères vérifiables pour considérer la demande terminée.
+    validations:
+      required: true
