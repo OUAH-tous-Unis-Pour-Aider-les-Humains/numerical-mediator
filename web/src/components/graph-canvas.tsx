@@ -14,6 +14,9 @@ type DragState = {
   startY: number;
 };
 
+const NODE_CENTER_X = 70;
+const NODE_CENTER_Y = 24;
+
 export function GraphCanvas({ graph }: GraphCanvasProps) {
   const [zoom, setZoom] = useState(1);
   const [offsetX, setOffsetX] = useState(120);
@@ -105,10 +108,10 @@ export function GraphCanvas({ graph }: GraphCanvasProps) {
               return (
                 <line
                   key={edge.id}
-                  x1={source.x + 70}
-                  y1={source.y + 24}
-                  x2={target.x + 70}
-                  y2={target.y + 24}
+                  x1={source.x + NODE_CENTER_X}
+                  y1={source.y + NODE_CENTER_Y}
+                  x2={target.x + NODE_CENTER_X}
+                  y2={target.y + NODE_CENTER_Y}
                   stroke="#94a3b8"
                   strokeWidth="2"
                 />
