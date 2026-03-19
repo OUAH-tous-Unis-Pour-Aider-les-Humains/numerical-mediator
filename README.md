@@ -1,6 +1,20 @@
 # numerical-mediator
 An open source application to connect people’s arguments and assemble the solution.
 
+## 🤝 Collaboration humain + IA (Copilot / Coding Agent)
+Ce dépôt est préparé pour une contribution assistée par IA avec un cadre explicite :
+
+- Instructions IA : [`.github/copilot-instructions.md`](./.github/copilot-instructions.md)
+- Guide de contribution : [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- Politique de sécurité : [`SECURITY.md`](./SECURITY.md)
+- Code de conduite : [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)
+- Modèle de Pull Request : [`.github/PULL_REQUEST_TEMPLATE.md`](./.github/PULL_REQUEST_TEMPLATE.md)
+
+Principes d'utilisation :
+- l’humain reste responsable des décisions et de la revue finale ;
+- les changements doivent rester petits, testés et documentés ;
+- aucune donnée sensible ne doit être ajoutée au code.
+
 ## 👋 Nouveaux arrivants : rejoignez la discussion
 Vous découvrez le projet ? N’hésitez pas à passer par l’onglet **Discussions** du repo pour poser vos questions, partager vos idées et proposer des orientations d’architecture.
 
