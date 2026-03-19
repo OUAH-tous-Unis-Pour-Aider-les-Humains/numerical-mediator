@@ -7,7 +7,8 @@
 - Frontend : **Next.js + TypeScript**
 - Service IA : **Python + FastAPI**
 - Données : **PostgreSQL**
-- Asynchrone : **Redis + BullMQ**
+- Asynchrone (côté TypeScript/Next.js) : **Redis + BullMQ**
+- Asynchrone (côté Python/FastAPI) : utiliser une queue Python compatible Redis.
 
 ## Contraintes
 - Proposer des changements minimaux et relisibles.
