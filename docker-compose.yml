@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: numerical_mediator_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: numerical_mediator
+      POSTGRES_USER: mediator
+      POSTGRES_PASSWORD: mediator
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

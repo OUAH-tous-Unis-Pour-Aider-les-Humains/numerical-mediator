@@ -18,6 +18,56 @@ Principes d'utilisation :
 ## 👋 Nouveaux arrivants : rejoignez la discussion
 Vous découvrez le projet ? N’hésitez pas à passer par l’onglet **Discussions** du repo pour poser vos questions, partager vos idées et proposer des orientations d’architecture.
 
+## Prototype local disponible (Next.js + PostgreSQL)
+Le dépôt contient maintenant un premier prototype exécutable en local dans [`/web`](./web) :
+
+- frontend Next.js (TypeScript) ;
+- API `/api/graph` connectée à PostgreSQL ;
+- affichage d’un schéma avec **zoom** (+/− et molette) et **déplacement** (cliquer + glisser) ;
+- scripts d’initialisation/seed de base ;
+- tests automatiques unitaires de la logique de schéma.
+
+### Démarrage local rapide
+Prérequis : Docker + Node.js 20+
+
+1. Démarrer PostgreSQL local :
+
+```bash
+docker compose up -d db
+```
+
+2. Installer l’app web et configurer l’environnement :
+
+```bash
+cd web
+npm install
+cp .env.example .env.local
+```
+
+3. Initialiser le schéma SQL et charger des données factices :
+
+```bash
+npm run db:init
+npm run db:seed
+```
+
+4. Lancer le site en local :
+
+```bash
+npm run dev
+```
+
+Puis ouvrir [http://localhost:3000](http://localhost:3000).
+
+### Vérification locale
+Depuis `web/` :
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
 ## GUIDE D'ARCHITECTURE D'UN NOUVEAU PROJET
 ### Contexte (adapté du message Discussions)
 Objectif : construire une application web très interactive (hébergée sur Vercel) pour manipuler de grands schémas (milliers de nœuds), avec filtrage, zoom, navigation fluide, regroupements superposables, puis ajouter :
