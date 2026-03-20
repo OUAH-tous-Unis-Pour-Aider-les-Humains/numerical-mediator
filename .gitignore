@@ -1,0 +1,17 @@
+# Fichier d'environnement local (contient des secrets)
+.env
+
+# Dépendances
+node_modules/
+
+# Build
+.next/
+dist/
+build/
+
+# Logs
+*.log
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
