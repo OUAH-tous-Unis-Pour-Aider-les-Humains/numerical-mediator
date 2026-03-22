@@ -1,40 +1,56 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { clampZoom, type GraphData } from "@/lib/graph-data";
+import { useMemo } from "react";
+import {
+  Background,
+  Controls,
+  MarkerType,
+  ReactFlow,
+  type Edge,
+  type Node,
+} from "reactflow";
+import "reactflow/dist/style.css";
+import type { GraphData } from "@/lib/graph-data";
 import styles from "@/app/page.module.css";
 
 type GraphCanvasProps = {
   graph: GraphData;
 };
 
-type DragState = {
-  active: boolean;
-  startX: number;
-  startY: number;
-};
-
-const NODE_CENTER_X = 70;
-const NODE_CENTER_Y = 24;
-
 export function GraphCanvas({ graph }: GraphCanvasProps) {
-  const [zoom, setZoom] = useState(1);
-  const [offsetX, setOffsetX] = useState(120);
-  const [offsetY, setOffsetY] = useState(80);
-  const [drag, setDrag] = useState<DragState>({
-    active: false,
-    startX: 0,
-    startY: 0,
-  });
-
-  const nodesById = useMemo(
-    () => new Map(graph.nodes.map((node) => [node.id, node])),
+  const nodes = useMemo<Node[]>(
+    () =>
+      graph.nodes.map((node) => ({
+        id: String(node.id),
+        position: { x: node.x, y: node.y },
+        data: { label: node.label },
+        style: {
+          border: "1px solid #94a3b8",
+          borderRadius: 10,
+          padding: 8,
+          width: 180,
+          background: "#f8fafc",
+          color: "#0f172a",
+          textAlign: "center",
+          fontWeight: 600,
+        },
+      })),
     [graph.nodes]
   );
 
-  function changeZoom(delta: number) {
-    setZoom((current) => clampZoom(Number((current + delta).toFixed(2))));
-  }
+  const edges = useMemo<Edge[]>(
+    () =>
+      graph.edges.map((edge) => ({
+        id: String(edge.id),
+        source: String(edge.sourceNodeId),
+        target: String(edge.targetNodeId),
+        label: edge.label ?? undefined,
+        markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b" },
+        style: { stroke: "#94a3b8", strokeWidth: 2 },
+        labelStyle: { fill: "#334155", fontSize: 12 },
+      })),
+    [graph.edges]
+  );
 
   return (
     <section className={styles.schemaSection}>
@@ -43,92 +59,25 @@ export function GraphCanvas({ graph }: GraphCanvasProps) {
           <h1>{graph.diagramTitle}</h1>
           <p>{graph.nodes.length} nœuds · {graph.edges.length} liens</p>
         </div>
-        <div className={styles.toolbar}>
-          <button onClick={() => changeZoom(-0.1)} type="button">
-            -
-          </button>
-          <span>{Math.round(zoom * 100)}%</span>
-          <button onClick={() => changeZoom(0.1)} type="button">
-            +
-          </button>
-          <button
-            onClick={() => {
-              setZoom(1);
-              setOffsetX(120);
-              setOffsetY(80);
-            }}
-            type="button"
-          >
-            Réinitialiser
-          </button>
-        </div>
+        <p className={styles.helpText}>Zoom: molette | Déplacement: clic + glisser</p>
       </header>
 
-      <div
-        className={styles.viewport}
-        onMouseDown={(event) => {
-          if (event.button !== 0) {
-            return;
-          }
-
-          setDrag({
-            active: true,
-            startX: event.clientX - offsetX,
-            startY: event.clientY - offsetY,
-          });
-        }}
-        onMouseLeave={() => setDrag({ active: false, startX: 0, startY: 0 })}
-        onMouseMove={(event) => {
-          if (!drag.active) {
-            return;
-          }
-
-          setOffsetX(event.clientX - drag.startX);
-          setOffsetY(event.clientY - drag.startY);
-        }}
-        onMouseUp={() => setDrag({ active: false, startX: 0, startY: 0 })}
-        onWheel={(event) => {
-          event.preventDefault();
-          changeZoom(event.deltaY < 0 ? 0.05 : -0.05);
-        }}
-      >
-        <div
-          className={styles.canvas}
-          style={{ transform: `translate(${offsetX}px, ${offsetY}px) scale(${zoom})` }}
+      <div className={styles.viewport}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          fitView
+          minZoom={0.3}
+          maxZoom={2}
+          proOptions={{ hideAttribution: true }}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={false}
+          className={styles.reactFlow}
         >
-          <svg className={styles.edges}>
-            {graph.edges.map((edge) => {
-              const source = nodesById.get(edge.sourceNodeId);
-              const target = nodesById.get(edge.targetNodeId);
-
-              if (!source || !target) {
-                return null;
-              }
-
-              return (
-                <line
-                  key={edge.id}
-                  x1={source.x + NODE_CENTER_X}
-                  y1={source.y + NODE_CENTER_Y}
-                  x2={target.x + NODE_CENTER_X}
-                  y2={target.y + NODE_CENTER_Y}
-                  stroke="#94a3b8"
-                  strokeWidth="2"
-                />
-              );
-            })}
-          </svg>
-
-          {graph.nodes.map((node) => (
-            <article
-              className={styles.node}
-              key={node.id}
-              style={{ left: node.x, top: node.y }}
-            >
-              <strong>{node.label}</strong>
-            </article>
-          ))}
-        </div>
+          <Background color="#e2e8f0" gap={24} size={1} />
+          <Controls showInteractive={false} />
+        </ReactFlow>
       </div>
     </section>
   );

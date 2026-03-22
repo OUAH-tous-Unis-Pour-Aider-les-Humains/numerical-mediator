@@ -1,0 +1,52 @@
+type OllamaGenerateResponse = {
+  response?: string;
+};
+
+function getRequiredEnv(name: string, fallback?: string): string {
+  const value = process.env[name] ?? fallback;
+  if (!value) {
+    throw new Error(`${name} doit être défini`);
+  }
+  return value;
+}
+
+function withTimeout(timeoutMs: number): AbortSignal {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeoutMs);
+  return controller.signal;
+}
+
+export async function generateWithOllama(prompt: string): Promise<string> {
+  const baseUrl = getRequiredEnv("OLLAMA_BASE_URL", "http://localhost:11434");
+  const model = getRequiredEnv("OLLAMA_MODEL", "qwen2.5:7b");
+  const timeoutMs = Number(process.env.OLLAMA_TIMEOUT_MS ?? "120000");
+
+  const response = await fetch(`${baseUrl}/api/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    signal: withTimeout(timeoutMs),
+    body: JSON.stringify({
+      model,
+      prompt,
+      stream: false,
+      format: "json",
+      options: {
+        temperature: 0.2,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(
+      `Ollama indisponible (${response.status}): ${body.slice(0, 200)}`
+    );
+  }
+
+  const payload = (await response.json()) as OllamaGenerateResponse;
+  if (!payload.response) {
+    throw new Error("Réponse Ollama invalide: champ response absent");
+  }
+
+  return payload.response;
+}

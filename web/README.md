@@ -1,15 +1,23 @@
-# Prototype web local (Next.js)
+# Prototype web local (Next.js + React Flow + Ollama)
 
 Cette application est la première implémentation locale de **numerical-mediator**.
 
 ## Prérequis
 - Node.js 20+
 - Docker (pour PostgreSQL local)
+- Ollama
 
 ## Configuration
 ```bash
 npm install
 cp .env.example .env.local
+```
+
+## IA locale (Ollama)
+
+```bash
+ollama serve
+ollama pull qwen2.5:7b
 ```
 
 ## Base de données
@@ -42,8 +50,7 @@ npm run build
 
 ## Fonctionnalités MVP incluses
 - API `/api/graph` connectée à PostgreSQL
+- API `/api/text-to-graph` connectée à Ollama local
 - chargement des données réelles côté frontend
-- canvas de schéma avec :
-  - zoom (+/− et molette)
-  - déplacement (cliquer + glisser)
+- canvas de schéma avec React Flow (zoom/pan natifs)
 - données factices injectées via `db:seed`

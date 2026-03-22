@@ -18,17 +18,18 @@ Principes d'utilisation :
 ## 👋 Nouveaux arrivants : rejoignez la discussion
 Vous découvrez le projet ? N’hésitez pas à passer par l’onglet **Discussions** du repo pour poser vos questions, partager vos idées et proposer des orientations d’architecture.
 
-## Prototype local disponible (Next.js + PostgreSQL)
+## Prototype local disponible (Next.js + PostgreSQL + Ollama)
 Le dépôt contient maintenant un premier prototype exécutable en local dans [`/web`](./web) :
 
 - frontend Next.js (TypeScript) ;
 - API `/api/graph` connectée à PostgreSQL ;
-- affichage d’un schéma avec **zoom** (+/− et molette) et **déplacement** (cliquer + glisser) ;
+- affichage d’un schéma avec **React Flow** (zoom/pan natifs) ;
+- génération d’un schéma depuis un texte via **Ollama local** (`/api/text-to-graph`) ;
 - scripts d’initialisation/seed de base ;
 - tests automatiques unitaires de la logique de schéma.
 
 ### Démarrage local rapide
-Prérequis : Docker + Node.js 20+
+Prérequis : Docker + Node.js 20+ + Ollama
 
 1. Démarrer PostgreSQL local :
 
@@ -44,20 +45,44 @@ npm install
 cp .env.example .env.local
 ```
 
-3. Initialiser le schéma SQL et charger des données factices :
+3. Démarrer Ollama et télécharger le modèle local recommandé :
+
+```bash
+ollama serve
+ollama pull qwen2.5:7b
+```
+
+4. Initialiser le schéma SQL et charger des données factices :
 
 ```bash
 npm run db:init
 npm run db:seed
 ```
 
-4. Lancer le site en local :
+5. Lancer le site en local :
 
 ```bash
 npm run dev
 ```
 
 Puis ouvrir [http://localhost:3000](http://localhost:3000).
+
+### Variables d’environnement (`web/.env.local`)
+
+```env
+DATABASE_URL=postgres://mediator:mediator@localhost:5432/numerical_mediator
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:7b
+OLLAMA_TIMEOUT_MS=120000
+TEXT_TO_GRAPH_MAX_CHARS=5000
+```
+
+### Parcours POC (texte → schéma)
+
+1. Saisir un texte dans le panneau "Générer un schéma avec Ollama".
+2. Cliquer sur "Générer le schéma".
+3. L’API `/api/text-to-graph` appelle Ollama, génère un graphe JSON puis le persiste en base.
+4. Le frontend recharge `/api/graph` et affiche le nouveau schéma dans React Flow.
 
 ### Vérification locale
 Depuis `web/` :
@@ -67,6 +92,12 @@ npm run lint
 npm run test
 npm run build
 ```
+
+### Dépannage rapide
+
+- Erreur `DATABASE_URL doit être défini` : vérifier `web/.env.local`.
+- Erreur Ollama indisponible : vérifier `ollama serve` et le port `11434`.
+- Modèle absent : exécuter `ollama pull qwen2.5:7b`.
 
 ## GUIDE D'ARCHITECTURE D'UN NOUVEAU PROJET
 ### Contexte (adapté du message Discussions)

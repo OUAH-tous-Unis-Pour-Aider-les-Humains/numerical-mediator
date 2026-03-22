@@ -6,11 +6,10 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <section className={styles.intro}>
-          <h1>Prototype local de schéma connecté à PostgreSQL</h1>
+          <h1>Prototype local de schéma (React Flow + PostgreSQL)</h1>
           <p>
-            Cette première version charge un schéma depuis la base, puis
-            l&apos;affiche avec zoom (+/− ou molette) et déplacement (cliquer +
-            glisser).
+            Cette version charge le dernier schéma en base et permet aussi de
+            générer un nouveau graphe depuis un texte via Ollama en local.
           </p>
         </section>
         <GraphLoader />
