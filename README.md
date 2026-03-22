@@ -79,6 +79,7 @@ Objectif : construire une application web très interactive (hébergée sur Verc
 1. **Frontend (Next.js + TypeScript)**  
    - Canvas interactif (zoom, pan, sélection, filtres, labels, flèches, groupes).  
    - Chargement progressif : récupérer uniquement le sous-graphe utile côté client.
+   - Envoie des modifications faites au schéma au backend lors de la sauvegarde du schéma.
 2. **API / Backend (Route Handlers Next.js ou service dédié Node.js)**  
    - Endpoints pour lecture/écriture de graphes, filtres, fusion, permissions.  
    - Validation stricte des entrées (schémas JSON, ACL utilisateur).
