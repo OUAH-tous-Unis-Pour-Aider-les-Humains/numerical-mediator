@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { type SubmitEvent, useCallback, useEffect, useState } from "react";
 import { GraphCanvas } from "@/components/graph-canvas";
 import type { GraphData } from "@/lib/graph-data";
 import styles from "@/app/page.module.css";
@@ -47,7 +47,7 @@ export function GraphLoader() {
     });
   }, [loadGraph]);
 
-  async function handleGenerate(event: FormEvent<HTMLFormElement>) {
+  async function handleGenerate(event: SubmitEvent) {
     event.preventDefault();
     setGenerating(true);
     setGenerationError(null);

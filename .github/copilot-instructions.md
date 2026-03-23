@@ -37,3 +37,28 @@
 - Vérifier localement tout ce qui est disponible dans ce dépôt.
 - Si une infra lint/test/build existe, la lancer avant de finaliser.
 - Ne pas corriger des sujets hors périmètre de la demande.
+
+# Compatibilité technique obligatoire (prototype web)
+## Cible frontend:
+
+- Next.js 16.x
+- React 19.x
+- TypeScript 5.9+
+- @types/react 19.x
+- @types/react-dom 19.x
+
+## Règle de contribution:
+-  Ne pas introduire de code basé sur des APIs marquées deprecated dans les types React ou TypeScript.
+- Si une API est deprecated, proposer et appliquer la migration vers son équivalent recommandé.
+- Préférer des changements minimaux, sans régression de comportement.
+- Typage des événements React (React 19):
+
+## Ne pas utiliser FormEvent et FormEventHandler (deprecated).
+- Utiliser SubmitEvent pour les handlers onSubmit.
+- Utiliser ChangeEvent pour les handlers onChange.
+- Utiliser InputEvent ou SyntheticEvent si le cas ne correspond pas à un événement spécialisé.
+- Vérifications avant finalisation:
+
+## Vérifier les usages deprecated dans le code applicatif.
+- Vérifier la cohérence des versions dans package.json et lockfile.
+- Exécuter lint, test, build si disponibles.
