@@ -33,6 +33,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WEB_DIR="${SCRIPT_DIR}/web"
 ENV_FILE="${WEB_DIR}/.env.local"
 
+# Docker Compose command resolution (supports both v1 and v2)
+DOCKER_COMPOSE_CMD=""
+
 ##############################################################################
 # Helper Functions
 ##############################################################################
@@ -67,31 +70,85 @@ check_dependency() {
   print_success "$1 is installed"
 }
 
+check_node_version() {
+  local min_major=18
+  local node_version
+  local node_major
+
+  node_version="$(node -v 2>/dev/null || true)"
+  node_version="${node_version#v}"
+  node_major="${node_version%%.*}"
+
+  if [[ -z "$node_major" || ! "$node_major" =~ ^[0-9]+$ ]]; then
+    print_error "Unable to detect Node.js version"
+    return 1
+  fi
+
+  if [ "$node_major" -lt "$min_major" ]; then
+    print_error "Node.js ${min_major}+ is required (found v${node_version})"
+    return 1
+  fi
+
+  print_success "Node.js version is compatible (v${node_version})"
+}
+
+check_docker_compose() {
+  if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+    print_success "docker-compose is installed"
+    return 0
+  fi
+
+  if docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+    print_success "docker compose is installed"
+    return 0
+  fi
+
+  print_error "Docker Compose is not installed"
+  return 1
+}
+
+compose() {
+  if [ "$DOCKER_COMPOSE_CMD" = "docker-compose" ]; then
+    docker-compose "$@"
+  else
+    docker compose "$@"
+  fi
+}
+
 check_prerequisites() {
   print_header "Checking Prerequisites"
   
   local missing_deps=0
+  local missing_messages=()
   
   if ! check_dependency "node"; then
     missing_deps=1
+    missing_messages+=("Node.js 18+ and npm: https://nodejs.org/")
+  elif ! check_node_version; then
+    missing_deps=1
+    missing_messages+=("Node.js 18+ and npm: https://nodejs.org/")
   fi
   
   if ! check_dependency "npm"; then
     missing_deps=1
+    missing_messages+=("Node.js 18+ and npm: https://nodejs.org/")
   fi
   
   if ! check_dependency "docker"; then
     missing_deps=1
+    missing_messages+=("Docker Engine: https://docs.docker.com/engine/install/")
   fi
   
-  if ! check_dependency "docker-compose"; then
+  if ! check_docker_compose; then
     missing_deps=1
+    missing_messages+=("Docker Compose: https://docs.docker.com/compose/install/")
   fi
   
   if [ $missing_deps -eq 1 ]; then
-    print_error "Some dependencies are missing. Please install them:"
-    echo "  • Node.js 18+ and npm: https://nodejs.org/"
-    echo "  • Docker and Docker Compose: https://www.docker.com/products/docker-desktop"
+    print_error "Some dependencies are missing or incompatible. Please install/fix:"
+    printf '%s\n' "${missing_messages[@]}" | sort -u | sed 's/^/  • /'
     return 1
   fi
   
@@ -139,10 +196,10 @@ start_postgres() {
   
   if docker ps -a --filter "name=numerical_mediator_db" --format "{{.State}}" | grep -q "exited"; then
     print_info "Restarting existing PostgreSQL container..."
-    docker compose -f "${SCRIPT_DIR}/docker-compose.yml" start db
+    compose -f "${SCRIPT_DIR}/docker-compose.yml" start db
   else
     print_info "Starting new PostgreSQL container..."
-    docker compose -f "${SCRIPT_DIR}/docker-compose.yml" up -d db
+    compose -f "${SCRIPT_DIR}/docker-compose.yml" up -d db
   fi
   
   # Wait for database to be ready
@@ -275,7 +332,7 @@ cleanup() {
   print_header "Cleaning Up"
   
   print_info "Stopping PostgreSQL..."
-  docker compose -f "${SCRIPT_DIR}/docker-compose.yml" stop db 2>/dev/null || true
+  compose -f "${SCRIPT_DIR}/docker-compose.yml" stop db 2>/dev/null || true
   print_success "PostgreSQL stopped"
   
   print_info "You may also want to stop Ollama manually"
@@ -330,7 +387,7 @@ clean_slate() {
   fi
   
   print_info "Stopping services..."
-  docker compose -f "${SCRIPT_DIR}/docker-compose.yml" down -v || true
+  compose -f "${SCRIPT_DIR}/docker-compose.yml" down -v || true
   
   print_info "Removing node_modules..."
   rm -rf "${WEB_DIR}/node_modules"
