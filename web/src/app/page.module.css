@@ -62,6 +62,27 @@
   background: #f8fafc;
 }
 
+.aiSelect {
+  width: fit-content;
+  min-width: 180px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #fff;
+}
+
+.aiCustomModel {
+  width: min(340px, 100%);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #fff;
+}
+
 .aiActions {
   display: flex;
   gap: 8px;

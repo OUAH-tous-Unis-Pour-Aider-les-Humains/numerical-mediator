@@ -15,8 +15,13 @@ export function GraphLoader() {
   const [prompt, setPrompt] = useState(
     "Alice défend la rapidité, Bob défend la robustesse. Trouver une solution commune."
   );
+  const [model, setModel] = useState("qwen2.5:7b");
+  const [customModel, setCustomModel] = useState("");
   const [generating, setGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
+
+  const effectiveModel =
+    model === "custom" ? customModel.trim() : model;
 
   const loadGraph = useCallback(async () => {
     setState({ status: "loading" });
@@ -37,17 +42,9 @@ export function GraphLoader() {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-
     loadGraph().catch(() => {
-      if (!mounted) {
-        return;
-      }
+      return;
     });
-
-    return () => {
-      mounted = false;
-    };
   }, [loadGraph]);
 
   async function handleGenerate(event: FormEvent<HTMLFormElement>) {
@@ -59,7 +56,7 @@ export function GraphLoader() {
       const response = await fetch("/api/text-to-graph", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: prompt }),
+        body: JSON.stringify({ text: prompt, model: effectiveModel }),
       });
 
       if (!response.ok) {
@@ -82,8 +79,28 @@ export function GraphLoader() {
     <section className={styles.loaderSection}>
       <form className={styles.aiPanel} onSubmit={handleGenerate}>
         <label className={styles.aiLabel} htmlFor="schema-prompt">
-          Générer un schéma avec Ollama (qwen2.5:7b)
+          Générer un schéma avec Ollama
         </label>
+        <select
+          className={styles.aiSelect}
+          value={model}
+          onChange={(event) => setModel(event.target.value)}
+          aria-label="Modele Ollama"
+        >
+          <option value="qwen2.5:7b">qwen2.5:7b</option>
+          <option value="llama3.1:8b">llama3.1:8b</option>
+          <option value="mistral:7b">mistral:7b</option>
+          <option value="custom">Autre modele...</option>
+        </select>
+        {model === "custom" ? (
+          <input
+            className={styles.aiCustomModel}
+            value={customModel}
+            onChange={(event) => setCustomModel(event.target.value)}
+            placeholder="ex: llama3:latest"
+            aria-label="Nom du modele Ollama personnalise"
+          />
+        ) : null}
         <textarea
           className={styles.aiInput}
           id="schema-prompt"
@@ -94,7 +111,14 @@ export function GraphLoader() {
           maxLength={5000}
         />
         <div className={styles.aiActions}>
-          <button disabled={generating || prompt.trim().length < 10} type="submit">
+          <button
+            disabled={
+              generating ||
+              prompt.trim().length < 10 ||
+              (model === "custom" && effectiveModel.length < 2)
+            }
+            type="submit"
+          >
             {generating ? "Génération en cours..." : "Générer le schéma"}
           </button>
           <button onClick={() => loadGraph()} type="button">

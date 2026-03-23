@@ -31,6 +31,20 @@ function getRequestText(payload: unknown): string {
   return candidate.trim();
 }
 
+function getRequestModel(payload: unknown): string | undefined {
+  if (!payload || typeof payload !== "object") {
+    return undefined;
+  }
+
+  const candidate = (payload as { model?: unknown }).model;
+  if (typeof candidate !== "string") {
+    return undefined;
+  }
+
+  const trimmed = candidate.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 async function persistDraftGraph(draft: DraftGraph): Promise<GraphData> {
   const diagramRows = await query<CreateDiagramRow>(
     "INSERT INTO diagrams (title) VALUES ($1) RETURNING id",
@@ -94,6 +108,7 @@ export async function POST(request: Request) {
   try {
     const payload = (await request.json().catch(() => ({}))) as unknown;
     const text = getRequestText(payload);
+    const model = getRequestModel(payload);
     const maxChars = Number(process.env.TEXT_TO_GRAPH_MAX_CHARS ?? "5000");
 
     if (text.length < 10) {
@@ -111,7 +126,7 @@ export async function POST(request: Request) {
     }
 
     const prompt = buildTextToGraphPrompt(text);
-    const rawJson = await generateWithOllama(prompt);
+    const rawJson = await generateWithOllama(prompt, model);
     const draft = parseDraftGraph(rawJson);
     const graph = await persistDraftGraph(draft);
 

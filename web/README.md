@@ -52,5 +52,6 @@ npm run build
 - API `/api/graph` connectée à PostgreSQL
 - API `/api/text-to-graph` connectée à Ollama local
 - chargement des données réelles côté frontend
+- sélecteur de modèle Ollama dans l'UI (qwen2.5:7b, llama3:latest, mistral:7b)
 - canvas de schéma avec React Flow (zoom/pan natifs)
 - données factices injectées via `db:seed`

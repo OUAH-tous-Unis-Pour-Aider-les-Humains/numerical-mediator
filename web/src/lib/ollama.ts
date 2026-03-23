@@ -2,6 +2,8 @@ type OllamaGenerateResponse = {
   response?: string;
 };
 
+const MODEL_PATTERN = /^[a-zA-Z0-9_.:-]{2,80}$/;
+
 function getRequiredEnv(name: string, fallback?: string): string {
   const value = process.env[name] ?? fallback;
   if (!value) {
@@ -16,9 +18,23 @@ function withTimeout(timeoutMs: number): AbortSignal {
   return controller.signal;
 }
 
-export async function generateWithOllama(prompt: string): Promise<string> {
+function resolveModelName(modelOverride?: string): string {
+  const modelFromEnv = getRequiredEnv("OLLAMA_MODEL", "qwen2.5:7b");
+  const candidate = (modelOverride ?? modelFromEnv).trim();
+
+  if (!MODEL_PATTERN.test(candidate)) {
+    throw new Error("Nom de modele Ollama invalide");
+  }
+
+  return candidate;
+}
+
+export async function generateWithOllama(
+  prompt: string,
+  modelOverride?: string
+): Promise<string> {
   const baseUrl = getRequiredEnv("OLLAMA_BASE_URL", "http://localhost:11434");
-  const model = getRequiredEnv("OLLAMA_MODEL", "qwen2.5:7b");
+  const model = resolveModelName(modelOverride);
   const timeoutMs = Number(process.env.OLLAMA_TIMEOUT_MS ?? "120000");
 
   const response = await fetch(`${baseUrl}/api/generate`, {

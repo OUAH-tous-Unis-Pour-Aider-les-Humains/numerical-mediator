@@ -80,9 +80,10 @@ TEXT_TO_GRAPH_MAX_CHARS=5000
 ### Parcours POC (texte → schéma)
 
 1. Saisir un texte dans le panneau "Générer un schéma avec Ollama".
-2. Cliquer sur "Générer le schéma".
-3. L’API `/api/text-to-graph` appelle Ollama, génère un graphe JSON puis le persiste en base.
-4. Le frontend recharge `/api/graph` et affiche le nouveau schéma dans React Flow.
+2. Choisir le modèle local (qwen2.5:7b, llama3:latest, mistral:7b) ou saisir un modèle personnalisé.
+3. Cliquer sur "Générer le schéma".
+4. L’API `/api/text-to-graph` appelle Ollama, génère un graphe JSON puis le persiste en base.
+5. Le frontend recharge `/api/graph` et affiche le nouveau schéma dans React Flow.
 
 ### Vérification locale
 Depuis `web/` :

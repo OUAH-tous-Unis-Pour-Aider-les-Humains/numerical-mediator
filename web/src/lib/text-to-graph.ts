@@ -32,6 +32,27 @@ type RawGraph = {
   edges?: unknown;
 };
 
+const NODE_LIMIT = 12;
+const EDGE_LIMIT = 32;
+const KEY_PATTERN = /^[a-zA-Z0-9_-]{1,32}$/;
+
+function normalizeNodeKey(value: unknown, fallback: string): string {
+  if (typeof value !== "string") {
+    return fallback;
+  }
+
+  const key = value.trim();
+  return KEY_PATTERN.test(key) ? key : fallback;
+}
+
+function normalizeLabel(value: unknown, maxLength: number): string {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
 export function buildTextToGraphPrompt(text: string): string {
   return [
     "Tu es un assistant de mediation.",
@@ -61,20 +82,35 @@ export function parseDraftGraph(rawJson: string): DraftGraph {
     throw new Error("La reponse IA n'est pas un JSON valide");
   }
 
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("La reponse IA doit etre un objet JSON");
+  }
+
   const diagramTitle =
     typeof parsed.diagramTitle === "string" && parsed.diagramTitle.trim().length > 0
       ? parsed.diagramTitle.trim().slice(0, 120)
       : "Schema genere par IA";
 
   const rawNodes = Array.isArray(parsed.nodes) ? (parsed.nodes as RawNode[]) : [];
-  const nodes: DraftNode[] = rawNodes
-    .map((node, index) => {
-      const key = typeof node.key === "string" ? node.key.trim() : `n${index + 1}`;
-      const label = typeof node.label === "string" ? node.label.trim() : "";
-      return { key, label };
-    })
-    .filter((node) => node.key.length > 0 && node.label.length > 0)
-    .slice(0, 24);
+  const seenNodeKeys = new Set<string>();
+  const nodes: DraftNode[] = [];
+
+  for (let index = 0; index < rawNodes.length; index += 1) {
+    if (nodes.length >= NODE_LIMIT) {
+      break;
+    }
+
+    const rawNode = rawNodes[index];
+    const key = normalizeNodeKey(rawNode.key, `n${index + 1}`);
+    const label = normalizeLabel(rawNode.label, 80);
+
+    if (label.length < 2 || seenNodeKeys.has(key)) {
+      continue;
+    }
+
+    nodes.push({ key, label });
+    seenNodeKeys.add(key);
+  }
 
   if (nodes.length < 2) {
     throw new Error("La reponse IA contient trop peu de noeuds exploitables");
@@ -83,27 +119,44 @@ export function parseDraftGraph(rawJson: string): DraftGraph {
   const allowedKeys = new Set(nodes.map((node) => node.key));
   const rawEdges = Array.isArray(parsed.edges) ? (parsed.edges as RawEdge[]) : [];
 
-  const edges: DraftEdge[] = rawEdges
-    .map((edge) => {
-      const sourceKey = typeof edge.sourceKey === "string" ? edge.sourceKey.trim() : "";
-      const targetKey = typeof edge.targetKey === "string" ? edge.targetKey.trim() : "";
-      const label = typeof edge.label === "string" ? edge.label.trim().slice(0, 80) : null;
+  const seenEdges = new Set<string>();
+  const edges: DraftEdge[] = [];
 
-      return {
-        sourceKey,
-        targetKey,
-        label: label && label.length > 0 ? label : null,
-      };
-    })
-    .filter(
-      (edge) =>
-        edge.sourceKey.length > 0 &&
-        edge.targetKey.length > 0 &&
-        edge.sourceKey !== edge.targetKey &&
-        allowedKeys.has(edge.sourceKey) &&
-        allowedKeys.has(edge.targetKey)
-    )
-    .slice(0, 64);
+  for (const rawEdge of rawEdges) {
+    if (edges.length >= EDGE_LIMIT) {
+      break;
+    }
+
+    const sourceKey = normalizeNodeKey(rawEdge.sourceKey, "");
+    const targetKey = normalizeNodeKey(rawEdge.targetKey, "");
+    const label = normalizeLabel(rawEdge.label, 80);
+
+    if (
+      sourceKey.length === 0 ||
+      targetKey.length === 0 ||
+      sourceKey === targetKey ||
+      !allowedKeys.has(sourceKey) ||
+      !allowedKeys.has(targetKey)
+    ) {
+      continue;
+    }
+
+    const edgeSignature = `${sourceKey}->${targetKey}:${label}`;
+    if (seenEdges.has(edgeSignature)) {
+      continue;
+    }
+
+    edges.push({
+      sourceKey,
+      targetKey,
+      label: label.length > 0 ? label : null,
+    });
+    seenEdges.add(edgeSignature);
+  }
+
+  if (edges.length === 0) {
+    throw new Error("La reponse IA ne contient aucun lien exploitable");
+  }
 
   return { diagramTitle, nodes, edges };
 }
