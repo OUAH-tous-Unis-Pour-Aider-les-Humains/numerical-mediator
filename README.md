@@ -31,13 +31,27 @@ Le dépôt contient maintenant un premier prototype exécutable en local dans [`
 ### Démarrage local rapide
 Prérequis : Docker + Node.js 20+ + Ollama
 
+**Option 1 : Automatisé (recommandé)**
+
+```bash
+# Première utilisation : configuration complète
+./launch.sh --full
+
+# Puis démarrer le serveur
+./launch.sh --quick
+```
+
+Voir `./launch.sh --help` pour toutes les options.
+
+**Option 2 : Manuel**
+
 1. Démarrer PostgreSQL local :
 
 ```bash
 docker compose up -d db
 ```
 
-2. Installer l’app web et configurer l’environnement :
+2. Installer l'app web et configurer l'environnement :
 
 ```bash
 cd web
