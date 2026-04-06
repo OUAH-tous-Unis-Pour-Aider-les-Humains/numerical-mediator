@@ -69,3 +69,18 @@ Objectif : construire une application web très interactive (hébergée sur Verc
 4. **Collaboration** : comptes, permissions, versioning.
 5. **Fusion métier** : règles de merge + résolution de conflits.
 6. **IA assistée** : texte → proposition de schéma, puis validation utilisateur.
+
+## Backend Python (démarrage implémentation)
+
+Le dossier [`backend/`](./backend/) est maintenant initialisé avec un starter exécutable :
+
+- FastAPI (`app/main.py`) ;
+- SQLAlchemy 2.0 avec modèles du schéma complet ;
+- Alembic avec une migration initiale ;
+- configuration d'environnement via `.env`.
+
+Pour démarrer rapidement, suivre le guide :
+- [`backend/README.md`](./backend/README.md)
+
+Source de vérité du schéma relationnel implémenté :
+- [`schema_bdd_complet.html`](./schema_bdd_complet.html)

@@ -2,24 +2,6 @@
 
 Merci de contribuer à **numerical-mediator**.
 
-## Démarrage rapide (Local)
-
-Pour lancer le projet localement, utilisez le script d'automatisation :
-
-```bash
-# Première utilisation : setup complet
-./launch.sh --full
-
-# Puis démarrer le serveur
-./launch.sh --quick
-```
-
-Pour plus d'options, consultez : `./launch.sh --help`
-
-**Prérequis :**
-- Docker + Docker Compose
-- Node.js 20+
-- Ollama (optionnel mais recommandé)
 
 ## Workflow de contribution (humain + IA)
 
@@ -38,6 +20,13 @@ Pour plus d'options, consultez : `./launch.sh --help`
 - PR : utiliser le template de Pull Request.
 - Sécurité : suivre [`SECURITY.md`](./SECURITY.md), ne jamais publier de secret.
 - Conduite : suivre [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+## Checklist backend (Python)
+
+- Garder les modèles SQLAlchemy alignés avec le schéma de référence.
+- Versionner toute évolution de schéma via Alembic.
+- Vérifier localement que l'API démarre (`uvicorn app.main:app --reload`).
+- Mettre à jour la documentation backend si une commande ou un workflow change.
 
 ## Besoin d'aide
 

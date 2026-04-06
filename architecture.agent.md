@@ -8,7 +8,9 @@
 - Service IA : **Python + FastAPI**
 - Données : **PostgreSQL**
 - Asynchrone (côté TypeScript/Next.js) : **Redis + BullMQ**
-- Asynchrone (côté Python/FastAPI) : utiliser une queue Python compatible Redis.
+- Asynchrone (côté Python/FastAPI) : **Celery + Redis**.
+- Accès base côté Python : **SQLAlchemy 2.0** (mix ORM/Core).
+- Migrations : **Alembic**.
 
 ## Contraintes
 - Proposer des changements minimaux et relisibles.
