@@ -85,6 +85,29 @@ Fonctionnalités V1 déjà implémentées :
 - endpoint de test asynchrone `POST /system/celery/ping` ;
 - structure `schemas/repositories/services` pour industrialiser la suite.
 
+### Backend V1 - statut actuel
+
+| Domaine | Statut | Détail |
+| --- | --- | --- |
+| API CRUD | OK | Endpoints exposés pour les 4 agrégats prioritaires |
+| Qualité API | OK | 9 tests passants (6 API + 3 contrats de schéma) |
+| Asynchrone | OK (prototype) | Celery ping + endpoint de statut de tâche |
+| Authentification / autorisation | A faire | Aucun contrôle d'accès utilisateur en V1 |
+| Règles métier avancées | Partiel | Fusion pour/contre et validations cross-entity à compléter |
+| Versioning / audit | A faire | Pas de traçabilité fine des modifications |
+
+### Limites connues V1
+
+- Pas d'authentification ni d'ACL par utilisateur.
+- Pas de versioning/audit des modifications.
+- Les règles métier avancées de fusion restent à implémenter.
+
+### Suite recommandée
+
+1. Ajouter l'authentification (JWT/session) et les autorisations par ressource.
+2. Implémenter les validations métier transverses et la logique de fusion.
+3. Ajouter l'observabilité (logs structurés, métriques) et renforcer la CI.
+
 Pour démarrer rapidement, suivre le guide :
 
 - [`backend/README.md`](./backend/README.md)

@@ -16,6 +16,47 @@ Ce dossier contient une base de travail pour l'API Python du projet.
 - PostgreSQL 16+
 - Redis 7+ (si vous voulez tester Celery)
 
+## Demarrage rapide avec Docker (PostgreSQL 16 + Redis 7)
+
+Si vous n'avez pas PostgreSQL/Redis en local, vous pouvez lancer les deux services avec Docker.
+
+PostgreSQL 16 (une seule ligne):
+
+```bash
+docker run -d --name nm-postgres -e POSTGRES_DB=numerical_mediator -e POSTGRES_USER=mediator -e POSTGRES_PASSWORD=mediator -p 5432:5432 postgres:16
+```
+
+Redis 7 (une seule ligne):
+
+```bash
+docker run -d --name nm-redis -p 6379:6379 redis:7
+```
+
+Verification rapide:
+
+```bash
+docker ps
+docker exec -it nm-postgres psql -U mediator -d numerical_mediator -c "select version();"
+docker exec -it nm-redis redis-cli ping
+```
+
+Resultat attendu pour Redis: `PONG`.
+
+Important (commande multi-lignes):
+
+Si vous copiez la commande `docker run` sur plusieurs lignes, chaque ligne doit se terminer par `\` (sauf la derniere), sinon Bash execute `-e` et `-p` comme des commandes separees.
+
+Exemple correct:
+
+```bash
+docker run -d --name nm-postgres \
+  -e POSTGRES_DB=numerical_mediator \
+  -e POSTGRES_USER=mediator \
+  -e POSTGRES_PASSWORD=mediator \
+  -p 5432:5432 \
+  postgres:16
+```
+
 ## Installation
 
 ```bash
@@ -108,6 +149,22 @@ cd backend
 make test
 ```
 
+## Couverture de tests V1
+
+La suite actuelle couvre les checks de base sur l'API et le contrat de schéma:
+
+- `test_healthcheck`
+- `test_classification_crud`
+- `test_donnee_crud`
+- `test_formule_maths_crud`
+- `test_hypothese_crud`
+- `test_celery_ping_and_status`
+- `test_classification_schema_contract`
+- `test_experimentation_schema_contract`
+- `test_science_schema_contract`
+
+Total actuel: 9 tests passants.
+
 ## Structure
 
 - app/main.py: entree FastAPI
@@ -123,8 +180,17 @@ make test
 ## Limites V1
 
 - Authentification/autorisation non implementees.
+- Pas de controles d'acces par utilisateur (ACL) sur les ressources.
 - Regles metier avancees de fusion pour/contre non implementees.
-- Pas encore de suite de tests automatisee dans ce lot.
+- Pas de versioning/audit pour tracer les modifications.
+- Suite de tests concentree sur smoke API + contrats de schema (pas encore de tests d'integration DB reelle).
+
+## Prochaines etapes post-V1
+
+1. Ajouter authentification + autorisations par ressource.
+2. Etendre les validations metier transverses et la logique de fusion.
+3. Ajouter des tests d'integration avec PostgreSQL/Redis reels.
+4. Renforcer la qualite continue (lint/type-check/CI).
 
 ## Notes schema
 
