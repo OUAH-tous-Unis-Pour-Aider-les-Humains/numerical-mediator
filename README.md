@@ -79,8 +79,16 @@ Le dossier [`backend/`](./backend/) est maintenant initialisé avec un starter e
 - Alembic avec une migration initiale ;
 - configuration d'environnement via `.env`.
 
+Fonctionnalités V1 déjà implémentées :
+
+- CRUD API pour `classification_objet`, `donnee`, `formule_maths`, `hypothese` ;
+- endpoint de test asynchrone `POST /system/celery/ping` ;
+- structure `schemas/repositories/services` pour industrialiser la suite.
+
 Pour démarrer rapidement, suivre le guide :
+
 - [`backend/README.md`](./backend/README.md)
 
 Source de vérité du schéma relationnel implémenté :
+
 - [`schema_bdd_complet.html`](./schema_bdd_complet.html)

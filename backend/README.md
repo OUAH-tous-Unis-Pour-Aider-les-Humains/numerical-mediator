@@ -34,10 +34,28 @@ source .venv/bin/activate
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+Ou via Makefile:
+
+```bash
+cd backend
+make run
+```
+
+Le Makefile utilise automatiquement `backend/.venv` si present, sinon `../.venv`.
+
 Endpoints de base:
 
 - GET /health
 - GET /docs
+- POST /system/celery/ping
+- GET /system/celery/tasks/{task_id}
+
+CRUD V1 expose:
+
+- /classification-objets
+- /donnees
+- /formules-maths
+- /hypotheses
 
 ## Migrations
 
@@ -53,13 +71,45 @@ Pour generer une nouvelle migration apres modification des modeles:
 alembic revision --autogenerate -m "describe change"
 ```
 
+Ou via Makefile:
+
+```bash
+cd backend
+make migrate
+```
+
+## Worker Celery
+
+```bash
+cd backend
+source .venv/bin/activate
+celery -A app.worker.celery_app.celery_app worker --loglevel=info
+```
+
+Ou via Makefile:
+
+```bash
+cd backend
+make worker
+```
+
 ## Structure
 
 - app/main.py: entree FastAPI
 - app/core/config.py: configuration centralisee via variables d'environnement
 - app/db/: base declarative SQLAlchemy + session
 - app/models/: modeles metier (classification, experimentation, maths, science)
+- app/schemas/: schemas d'entree/sortie API (Pydantic v2)
+- app/repositories/: acces DB par agregat
+- app/services/: logique applicative par agregat
+- app/worker/: configuration Celery et tasks
 - alembic/: configuration et scripts de migration
+
+## Limites V1
+
+- Authentification/autorisation non implementees.
+- Regles metier avancees de fusion pour/contre non implementees.
+- Pas encore de suite de tests automatisee dans ce lot.
 
 ## Notes schema
 
