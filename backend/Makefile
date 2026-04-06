@@ -1,4 +1,4 @@
-.PHONY: install migrate run worker
+.PHONY: install migrate run worker test
 
 PYTHON_LOCAL := .venv/bin/python
 PYTHON_ROOT := ../.venv/bin/python
@@ -20,3 +20,6 @@ run:
 
 worker:
 	$(PYTHON) -m celery -A app.worker.celery_app.celery_app worker --loglevel=info
+
+test:
+	$(PYTHON) -m pytest -q

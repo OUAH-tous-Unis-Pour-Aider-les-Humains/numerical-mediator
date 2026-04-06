@@ -93,6 +93,21 @@ cd backend
 make worker
 ```
 
+## Tests
+
+```bash
+cd backend
+source .venv/bin/activate
+pytest -q
+```
+
+Ou via Makefile:
+
+```bash
+cd backend
+make test
+```
+
 ## Structure
 
 - app/main.py: entree FastAPI
