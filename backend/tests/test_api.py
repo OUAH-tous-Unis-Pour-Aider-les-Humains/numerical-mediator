@@ -79,16 +79,39 @@ class FakeFormuleMathsService:
         self.db = db
 
     def list(self, *, limit: int = 50, offset: int = 0):
-        return [SimpleNamespace(id=uuid4(), cle="axiome_1", formule_latex="a=a", est_axiome=True)]
+        return [
+            SimpleNamespace(
+                id=uuid4(),
+                intitule="axiome_1",
+                symbole="=",
+                formule_latex="a=a",
+                demonstration_latex=None,
+                est_axiome=True,
+            )
+        ]
 
     def create(self, payload):
         return SimpleNamespace(id=uuid4(), **payload.model_dump())
 
     def get_or_404(self, formule_id: UUID):
-        return SimpleNamespace(id=formule_id, cle="axiome_1", formule_latex="a=a", est_axiome=True)
+        return SimpleNamespace(
+            id=formule_id,
+            intitule="axiome_1",
+            symbole="=",
+            formule_latex="a=a",
+            demonstration_latex=None,
+            est_axiome=True,
+        )
 
     def update(self, formule_id: UUID, payload):
-        data = {"id": formule_id, "cle": "axiome_1", "formule_latex": "a=a", "est_axiome": True}
+        data = {
+            "id": formule_id,
+            "intitule": "axiome_1",
+            "symbole": "=",
+            "formule_latex": "a=a",
+            "demonstration_latex": None,
+            "est_axiome": True,
+        }
         data.update(payload.model_dump(exclude_unset=True))
         return SimpleNamespace(**data)
 
@@ -197,10 +220,16 @@ def test_formule_maths_crud(client, monkeypatch):
 
     created = client.post(
         "/formules-maths",
-        json={"cle": "axiome_1", "formule_latex": "a=a", "est_axiome": True},
+        json={
+            "intitule": "axiome_1",
+            "symbole": "=",
+            "formule_latex": "a=a",
+            "demonstration_latex": None,
+            "est_axiome": True,
+        },
     )
     assert created.status_code == 201
-    assert created.json()["cle"] == "axiome_1"
+    assert created.json()["intitule"] == "axiome_1"
 
     listed = client.get("/formules-maths")
     assert listed.status_code == 200
@@ -210,9 +239,9 @@ def test_formule_maths_crud(client, monkeypatch):
     fetched = client.get(f"/formules-maths/{formule_id}")
     assert fetched.status_code == 200
 
-    updated = client.patch(f"/formules-maths/{formule_id}", json={"cle": "axiome_2"})
+    updated = client.patch(f"/formules-maths/{formule_id}", json={"intitule": "axiome_2"})
     assert updated.status_code == 200
-    assert updated.json()["cle"] == "axiome_2"
+    assert updated.json()["intitule"] == "axiome_2"
 
     deleted = client.delete(f"/formules-maths/{formule_id}")
     assert deleted.status_code == 204

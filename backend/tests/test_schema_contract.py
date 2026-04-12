@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from app.models.classification import ClassificationObjet, ClassificationVariable
 from app.models.experimentation import Donnee, DonneeRelation, Source, SourceDonnee
-from app.models.maths import FormuleMaths
+from app.models.maths import FormuleMaths, FormuleMathsDemonstrationReference
 from app.models.science import Hypothese, HypotheseContre, HypothesePour, HypotheseVariable
 
 
@@ -19,13 +19,17 @@ def test_experimentation_schema_contract():
     assert [column.name for column in DonneeRelation.__table__.primary_key.columns] == ["donnee_a_id", "donnee_b_id"]
     assert "source.id" in {str(fk.column) for fk in SourceDonnee.__table__.foreign_keys}
     assert "donnee.id" in {str(fk.column) for fk in DonneeRelation.__table__.foreign_keys}
+    assert "date" in {column.name for column in Source.__table__.columns}
+    assert "date_depot" not in {column.name for column in Source.__table__.columns}
 
 
 def test_science_schema_contract():
     assert FormuleMaths.__tablename__ == "formule_maths"
+    assert FormuleMathsDemonstrationReference.__tablename__ == "formule_maths_utilisation"
     assert Hypothese.__tablename__ == "hypothese"
     assert [column.name for column in HypotheseVariable.__table__.primary_key.columns] == ["hypothese_id", "lettre"]
     assert [column.name for column in HypothesePour.__table__.primary_key.columns] == ["hypothese_id", "donnee_id"]
     assert [column.name for column in HypotheseContre.__table__.primary_key.columns] == ["hypothese_id", "donnee_id"]
     assert "classification_objet.id" in {str(fk.column) for fk in HypotheseVariable.__table__.foreign_keys}
     assert "donnee.id" in {str(fk.column) for fk in HypothesePour.__table__.foreign_keys}
+    assert "formule_maths.id" in {str(fk.column) for fk in FormuleMathsDemonstrationReference.__table__.foreign_keys}

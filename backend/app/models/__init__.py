@@ -1,6 +1,6 @@
 from app.models.classification import ClassificationObjet, ClassificationNature, ClassificationVariable
 from app.models.experimentation import Donnee, DonneeRelation, Source, SourceDonnee
-from app.models.maths import FormuleMaths
+from app.models.maths import FormuleMaths, FormuleMathsDemonstrationReference
 from app.models.science import Hypothese, HypotheseContre, HypothesePour, HypotheseVariable
 
 __all__ = [
@@ -12,6 +12,7 @@ __all__ = [
     "SourceDonnee",
     "DonneeRelation",
     "FormuleMaths",
+    "FormuleMathsDemonstrationReference",
     "Hypothese",
     "HypotheseVariable",
     "HypothesePour",

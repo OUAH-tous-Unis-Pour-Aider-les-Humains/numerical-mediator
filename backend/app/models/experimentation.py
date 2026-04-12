@@ -1,5 +1,6 @@
 import uuid
 from datetime import date
+from typing import Any
 
 from sqlalchemy import Date, ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -12,11 +13,10 @@ class Source(Base):
     __tablename__ = "source"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    date_source: Mapped[date | None] = mapped_column(Date(), nullable=True)
+    date: Mapped[date | None] = mapped_column(Date(), nullable=True)
     lieu: Mapped[str | None] = mapped_column(String(255), nullable=True)
     auteur: Mapped[str | None] = mapped_column(String(255), nullable=True)
     environnement: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    date_depot: Mapped[date | None] = mapped_column(Date(), nullable=True)
 
     donnees_associees: Mapped[list["SourceDonnee"]] = relationship(
         back_populates="source", cascade="all, delete-orphan"
@@ -27,7 +27,7 @@ class Donnee(Base):
     __tablename__ = "donnee"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    contenu: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    contenu: Mapped[Any] = mapped_column(JSONB, nullable=False)
 
     sources_associees: Mapped[list["SourceDonnee"]] = relationship(
         back_populates="donnee", cascade="all, delete-orphan"

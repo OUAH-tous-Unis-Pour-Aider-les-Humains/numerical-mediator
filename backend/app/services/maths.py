@@ -33,7 +33,7 @@ class FormuleMathsService:
             return created
         except IntegrityError as exc:
             self.db.rollback()
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Clé déjà existante") from exc
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Intitulé déjà existant") from exc
 
     def update(self, formule_id: UUID, payload: FormuleMathsUpdate) -> FormuleMaths:
         formule = self.get_or_404(formule_id)

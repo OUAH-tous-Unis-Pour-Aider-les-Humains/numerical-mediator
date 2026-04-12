@@ -197,3 +197,9 @@ Total actuel: 9 tests passants.
 Le schema implemente suit le diagramme de reference dans le fichier:
 
 - ../schema_bdd_complet.html
+
+Points notables du schema courant:
+
+- `source` utilise `date`, `lieu`, `auteur` et `environnement`.
+- `formule_maths` porte `intitule`, `symbole`, `formule_latex`, `demonstration_latex` et `est_axiome`.
+- `formule_maths_utilisation` relie une formule a ses references utilisees dans une demonstration.

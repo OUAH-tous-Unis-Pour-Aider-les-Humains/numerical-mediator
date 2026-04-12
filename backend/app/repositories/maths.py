@@ -13,7 +13,7 @@ class FormuleMathsRepository:
         self.db = db
 
     def list(self, *, limit: int = 50, offset: int = 0) -> list[FormuleMaths]:
-        stmt = select(FormuleMaths).order_by(FormuleMaths.cle).offset(offset).limit(limit)
+        stmt = select(FormuleMaths).order_by(FormuleMaths.intitule).offset(offset).limit(limit)
         return list(self.db.scalars(stmt).all())
 
     def get(self, formule_id: UUID) -> FormuleMaths | None:

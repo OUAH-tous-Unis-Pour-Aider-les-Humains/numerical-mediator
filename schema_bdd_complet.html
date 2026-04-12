@@ -28,74 +28,83 @@ mermaid.initialize({
   },
 });
 const diagramSrc = `erDiagram
-    CLASSIFICATION_OBJET {
-        uuid id PK
-        string wikidata_ref
-        string nom_fr
-        text formule_latex
-        string nature
-    }
-    CLASSIFICATION_VARIABLE {
-        uuid id PK
-        uuid objet_id FK
-        char lettre
-        string wikidata_ref
-    }
-    SOURCE {
-        uuid id PK
-        date date_source
-        string lieu
-        string auteur
-        string environnement
-        date date_depot
-    }
-    DONNEE {
-        uuid id PK
-        jsonb contenu
-    }
-    SOURCE_DONNEE {
-        uuid source_id FK
-        uuid donnee_id FK
-    }
-    DONNEE_RELATION {
-        uuid donnee_a_id FK
-        uuid donnee_b_id FK
-    }
-    FORMULE_MATHS {
-        uuid id PK
-        string cle
-        text formule_latex
-        boolean est_axiome
-    }
-    HYPOTHESE {
-        uuid id PK
-        text formule_latex
-        float statut
-    }
-    HYPOTHESE_VARIABLE {
-        uuid hypothese_id FK
-        char lettre
-        uuid classification_id FK
-    }
-    HYPOTHESE_POUR {
-        uuid hypothese_id FK
-        uuid donnee_id FK
-    }
-    HYPOTHESE_CONTRE {
-        uuid hypothese_id FK
-        uuid donnee_id FK
-    }
+  CLASSIFICATION_OBJET {
+    uuid id PK
+    string wikidata_ref
+    string nom_fr
+    text formule_latex
+    string nature
+  }
+  CLASSIFICATION_VARIABLE {
+    uuid id PK
+    uuid objet_id FK
+    char lettre
+    string wikidata_ref
+  }
+  SOURCE {
+    uuid id PK
+    date date
+    string lieu
+    string auteur
+    string environnement
+  }
+  DONNEE {
+    uuid id PK
+    jsonb contenu
+  }
+  SOURCE_DONNEE {
+    uuid source_id FK
+    uuid donnee_id FK
+  }
+  DONNEE_RELATION {
+    uuid donnee_a_id FK
+    uuid donnee_b_id FK
+  }
+  FORMULE_MATHS {
+    uuid id PK
+    string intitule
+    string symbole
+    text formule_latex
+    text demonstration_latex
+    boolean est_axiome
+  }
+  FORMULE_MATHS_UTILISATION {
+    uuid id PK
+    uuid formule_maths_id FK
+    uuid reference_id FK
+    string nom_reference_dans_demonstration
+  }
+  HYPOTHESE {
+    uuid id PK
+    text formule_latex
+    float statut
+  }
+  HYPOTHESE_VARIABLE {
+    uuid hypothese_id FK
+    char lettre
+    uuid classification_id FK
+  }
+  HYPOTHESE_POUR {
+    uuid hypothese_id FK
+    uuid donnee_id FK
+  }
+  HYPOTHESE_CONTRE {
+    uuid hypothese_id FK
+    uuid donnee_id FK
+  }
 
-    CLASSIFICATION_OBJET ||--o{ CLASSIFICATION_VARIABLE : "variables"
-    SOURCE ||--o{ SOURCE_DONNEE : "produit"
-    DONNEE ||--o{ SOURCE_DONNEE : "appuyee par"
-    DONNEE ||--o{ DONNEE_RELATION : "reliee a"
-    HYPOTHESE ||--o{ HYPOTHESE_VARIABLE : "variables"
-    CLASSIFICATION_OBJET ||--o{ HYPOTHESE_VARIABLE : "represente"
-    HYPOTHESE ||--o{ HYPOTHESE_POUR : "pour"
-    HYPOTHESE ||--o{ HYPOTHESE_CONTRE : "contre"
-    DONNEE ||--o{ HYPOTHESE_POUR : "soutient"
-    DONNEE ||--o{ HYPOTHESE_CONTRE : "refute"
+  CLASSIFICATION_OBJET ||--o{ CLASSIFICATION_VARIABLE : "variables"
+  SOURCE ||--o{ SOURCE_DONNEE : "produit"
+  DONNEE ||--o{ SOURCE_DONNEE : "appuyee par"
+  DONNEE ||--o{ DONNEE_RELATION : "reliee a"
+  FORMULE_MATHS ||--o{ FORMULE_MATHS_UTILISATION : "demonstration"
+  FORMULE_MATHS ||--o{ FORMULE_MATHS_UTILISATION : "referencee"
+  HYPOTHESE ||--o{ HYPOTHESE_VARIABLE : "variables"
+  CLASSIFICATION_OBJET ||--o{ HYPOTHESE_VARIABLE : "represente"
+  HYPOTHESE ||--o{ HYPOTHESE_POUR : "pour"
+  HYPOTHESE ||--o{ HYPOTHESE_CONTRE : "contre"
+  DONNEE ||--o{ HYPOTHESE_POUR : "soutient"
+  DONNEE ||--o{ HYPOTHESE_CONTRE : "refute"
 `;
 try {
   const { svg } = await mermaid.render('erd-svg', diagramSrc);

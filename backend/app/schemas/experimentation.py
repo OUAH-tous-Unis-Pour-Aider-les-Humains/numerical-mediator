@@ -7,15 +7,15 @@ from pydantic import BaseModel, ConfigDict
 
 
 class DonneeCreate(BaseModel):
-    contenu: dict[str, Any]
+    contenu: Any
 
 
 class DonneeUpdate(BaseModel):
-    contenu: dict[str, Any] | None = None
+    contenu: Any | None = None
 
 
 class DonneeRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    contenu: dict[str, Any]
+    contenu: Any
